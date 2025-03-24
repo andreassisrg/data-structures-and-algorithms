@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -g            # Compiler flags
 TARGET = bin/pa1.out
 
 SRCS := $(wildcard src/*.c)
-OBJS = $(patsubst src/%.c, obj/%.o, $(wildcard src/*.c))
+OBJS := $(patsubst src/%.c, obj/%.o, $(wildcard src/*.c))
 
 all: $(OBJS)
 	$(CC) -o $(TARGET) $(OBJS)
