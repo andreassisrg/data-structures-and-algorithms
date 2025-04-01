@@ -168,12 +168,29 @@ void recursiveSelectionSort(int arr[], int l, int r, sortperf_t * s)
 }
 
 // selection sort
-void selectionSort(int arr[], int l, int r, sortperf_t * s) { 
+void selectionSort(int arr[], int l, int r, sortperf_t * s) {
+  inccalls(s, 1);
+  int min = l; // pra que caralhos serve o l
+
+  for (int i = 0; i < r; i++) { // cpa que o r é length-1
+    min = i;
+    for (int j = i + 1; j < r + 1; j++) {
+      inccmp(s, 1);
+      if (arr[j] < arr[min]) {
+        min = j;
+      }
+    }
+
+    incmove(s, 1);
+    swap(&arr[i], &arr[min], s);
+  }
+
   return;
 }
 
 //insertion sort
 void insertionSort(int v[], int l, int r, sortperf_t * s) {
+  
   return;
 }
 
