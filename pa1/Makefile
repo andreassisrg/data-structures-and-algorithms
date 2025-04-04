@@ -4,12 +4,18 @@ TARGET = bin/pa1.out
 
 SRCS := $(wildcard src/*.c)
 OBJS := $(patsubst src/%.c, obj/%.o, $(wildcard src/*.c))
+DIRS := bin obj include
 
-all: $(OBJS)
-	$(CC) -o $(TARGET) $(OBJS)
+all: $(DIRS) $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $(OBJS)
 
 obj/%.o: src/%.c
-	mkdir -p bin include obj && $(CC) -c $< -o $@
+	$(CC) -c $< -o $@
+
+$(DIRS):
+	mkdir -p $@
 
 .PHONY: clean
 clean:
