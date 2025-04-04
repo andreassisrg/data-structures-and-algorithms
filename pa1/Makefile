@@ -9,12 +9,12 @@ all: $(OBJS)
 	$(CC) -o $(TARGET) $(OBJS)
 
 obj/%.o: src/%.c
-	$(CC) -c $< -o $@
+	mkdir -p bin include obj && $(CC) -c $< -o $@
 
 .PHONY: clean
 clean:
-	rm $(OBJS)
+	rm -f $(OBJS)
 
 .PHONY: prepare
 prepare:
-	rm $(OBJS) $(wildcard bin/*)
+	rm -f $(OBJS) $(wildcard bin/*)
