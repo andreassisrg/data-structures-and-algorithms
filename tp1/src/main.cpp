@@ -1,20 +1,32 @@
 #include <iostream>
+#include <fstream>
 #include "../include/utils.hpp"
 #include "../include/ordenadorUniversal.hpp"
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        std::cerr << "Uso: " << argv[0] << " <arquivo_entrada>\n";
+        return 1;
+    }
+
+    std::ifstream inputFile(argv[1]);
+    if (!inputFile) {
+        std::cerr << "Erro ao abrir o arquivo: " << argv[1] << "\n";
+        return 1;
+    }
+
     int seed;
     double limiarCusto, a, b, c;
     int tam;
 
-    std::cin >> seed >> limiarCusto >> a >> b >> c >> tam;
+    inputFile >> seed >> limiarCusto >> a >> b >> c >> tam;
 
-    // Lê vetor de entrada
     int *V = new int[tam];
     for (int i = 0; i < tam; ++i)
-        std::cin >> V[i];
+        inputFile >> V[i];
 
-    // Cria e executa o calibrador
+    inputFile.close();
+
     OrdenadorUniversal ou(limiarCusto, a, b, c, tam, seed, V);
     ou.run();
 

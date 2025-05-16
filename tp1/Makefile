@@ -23,4 +23,4 @@ clean:
 
 .PHONY: prepare
 prepare:
-	rm -f $(OBJS) $(wildcard bin/*)
+	rm -rf $(OBJS) $(wildcard bin/*) obj bin

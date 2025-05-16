@@ -37,7 +37,7 @@ OrdenadorUniversal::~OrdenadorUniversal() {}
 void OrdenadorUniversal::run()
 {
     int totalBreaks = countBreaks(V_base, size);
-    std::cout << "size " << size << " seed " << seed << " breaks " << totalBreaks << "\n\n";
+    std::cout << "size " << size << " seed " << seed << " breaks " << totalBreaks << "\n";
 
     limiarParticao = determinaLimiarParticao(V_base);
     std::cout << "\n";
@@ -56,6 +56,7 @@ int OrdenadorUniversal::determinaLimiarParticao(int *V)
 
     do
     {
+        std::cout << '\n';
         std::cout << "iter " << iter++ << "\n";
         numMPS = 0;
         double custos[10];
@@ -126,8 +127,7 @@ int OrdenadorUniversal::determinaLimiarParticao(int *V)
 
         std::cout << "nummps " << numMPS
                   << " limParticao " << limParticao
-                  << " mpsdiff " << std::fixed << std::setprecision(6) << diffCusto
-                  << "\n\n";
+                  << " mpsdiff " << std::fixed << std::setprecision(6) << diffCusto;
 
     } while (diffCusto > limiarCusto && numMPS >= 5);
 
@@ -137,7 +137,7 @@ int OrdenadorUniversal::determinaLimiarParticao(int *V)
 int OrdenadorUniversal::determinaLimiarQuebras(int *V)
 {
     int minLQ = 1;
-    int maxLQ = size / 2; // Metade do tamanho é suficiente para testar
+    int maxLQ = size / 2;
     int passoLQ = (maxLQ - minLQ) / 5;
     if (passoLQ == 0)
         passoLQ = 1;
@@ -149,7 +149,7 @@ int OrdenadorUniversal::determinaLimiarQuebras(int *V)
 
     do
     {
-        std::cout << "iter " << iter << "\n";
+        std::cout << '\n';
         std::cout << "iter " << iter++ << "\n";
         numLQ = 0;
         double custosQS[10], custosIN[10];
@@ -249,7 +249,7 @@ int OrdenadorUniversal::determinaLimiarQuebras(int *V)
         std::cout << "numlq " << numLQ
                   << " limQuebras " << limQuebras
                   << " lqdiff " << std::fixed << std::setprecision(6) << diffCusto
-                  << "\n\n";
+                  << "\n";
 
         if (numLQ <= 3)
         {
