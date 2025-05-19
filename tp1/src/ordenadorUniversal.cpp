@@ -8,22 +8,15 @@
 #include "../include/algoritmos.hpp"
 
 // Seleciona algoritmo com base no número de quebras e tamanho de partição
-void ordenadorUniversal(int *V, int tam, int minTamParticao, int limiarQuebras, sortperf_t *s)
-{
-    int quebras = countBreaks(V, tam);
+void ordenadorUniversal(int *V, int tam, int minTamParticao, int limiarQuebras, sortperf_t *s) {
+    int numeroQuebras = countBreaks(V, tam);
 
-    if (quebras < limiarQuebras)
-    {
+    if (numeroQuebras > limiarQuebras) {
         insertionSort(V, 0, tam - 1, s);
-    }
-    else
-    {
-        if (tam > minTamParticao)
-        {
-            quickSort3(V, 0, tam - 1, s);
-        }
-        else
-        {
+    } else {
+        if (tam > minTamParticao) {
+            quickSort3Ins(V, 0, tam - 1, minTamParticao, s);
+        } else {
             insertionSort(V, 0, tam - 1, s);
         }
     }
@@ -34,259 +27,170 @@ OrdenadorUniversal::OrdenadorUniversal(double limiarCusto, double a, double b, d
 
 OrdenadorUniversal::~OrdenadorUniversal() {}
 
-void OrdenadorUniversal::run()
-{
+void OrdenadorUniversal::run() {
     int totalBreaks = countBreaks(V_base, size);
-    std::cout << "size " << size << " seed " << seed << " breaks " << totalBreaks << "\n";
-
+    std::cout << "size " << size << " seed " << seed << " breaks " << totalBreaks << "\n" << std::endl;
+    
     limiarParticao = determinaLimiarParticao(V_base);
-    std::cout << "\n";
+
+    sortperf_t s;
+    quickSort3Ins(V_base, 0, size - 1, 50, &s);
     limiarQuebras = determinaLimiarQuebras(V_base);
 }
 
-int OrdenadorUniversal::determinaLimiarParticao(int *V)
-{
+int OrdenadorUniversal::determinaLimiarParticao(int *V) {
+    // Inicializando variáveis que vão ser refinadas conforme as iterações
     int minMPS = 2;
     int maxMPS = size;
-    int passoMPS = (maxMPS - minMPS) / 5;
-    double diffCusto = std::numeric_limits<double>::max();
-    int iter = 0;
+    int passoMPS = (int) (maxMPS - minMPS) / 5;
+    int limParticao;
     int numMPS;
-    int limParticao = minMPS;
+    float diffCusto;
+    
+    // Variáveis auxiliares para cada iteração
+    sortperf_t s;
+    int iter = 0;
+    int indiceMinCusto, indiceMaxCusto;
+    double custoMPS, minCusto, maxCusto;
 
-    do
-    {
-        std::cout << '\n';
-        std::cout << "iter " << iter++ << "\n";
+    std::cout << std::fixed << std::setprecision(6);
+    do {
+        // Inicialização do bloco
+        std::cout << "iter " << iter++ << std::endl;
         numMPS = 0;
-        double custos[10];
-        int mps_values[10];
+        limParticao = minMPS;
+        minCusto = std::numeric_limits<int>::max();
+        maxCusto = std::numeric_limits<int>::min();
+        indiceMinCusto = 0;
+        indiceMaxCusto = 0;
+        double custo[10];
+        int mps[10];
 
-        for (int t = minMPS; t <= maxMPS && numMPS < 6; t += passoMPS)
-        {
-            int *W = new int[size];
-            memcpy(W, V, size * sizeof(int));
-            sortperf_t s;
+        for (int t = minMPS; t <= maxMPS; t += passoMPS) {
             resetcounter(&s);
+            mps[numMPS] = t;
 
-            // Executar ordenação com o tamanho de partição específico
-            ordenadorUniversal(W, size, t, size, &s);
+            // Criar um vetor auxiliar para ser ordenado
+            int *V_auxiliar = new int[size];
+            memcpy(V_auxiliar, V, size * sizeof(int));
 
-            custos[numMPS] = cost(&s, a, b, c);
-            mps_values[numMPS] = t;
+            // Calcular o custo de ordenação no vetor auxiliar e armazenar em sortperf_t
+            ordenadorUniversal(V_auxiliar, size, t, size, &s);
+            
+            // Calcular estatísticas e imprimir linha
+            custoMPS = cost(&s, a, b, c);
+            custo[numMPS] = custoMPS;
+            std::cout << "mps "    << t
+                      << " cost "  << custoMPS
+                      << " cmp "   << s.cmp
+                      << " move "  << s.move
+                      << " calls " << s.calls
+                      << std::endl;
 
-            std::cout << "mps " << t
-                      << " cost " << std::fixed << std::setprecision(9) << custos[numMPS]
-                      << " cmp " << s.cmp
-                      << " move " << s.move
-                      << " calls " << s.calls << "\n";
+            // Armazenar o menor custo e o maior custo para ajustar diffCusto posteriormente
+            if (custoMPS > maxCusto) {
+                maxCusto = custoMPS;
+                indiceMaxCusto = numMPS;
+            }
 
-            delete[] W;
+            if (custoMPS < minCusto) {
+                minCusto = custoMPS;
+                indiceMinCusto = numMPS;
+                limParticao = t;
+            }
+
+            delete[] V_auxiliar;
             numMPS++;
         }
 
-        // Encontrar o valor com menor custo
-        int idxMin = 0;
-        for (int i = 1; i < numMPS; i++)
-        {
-            if (custos[i] < custos[idxMin])
-            {
-                idxMin = i;
-            }
+        // Refinação com base nos índices
+        if (indiceMinCusto == 0) {
+            minMPS = mps[0];
+            maxMPS = mps[2];
+            diffCusto = fabs(custo[0] - custo[2]);
+        } else if (indiceMinCusto == numMPS - 1) {
+            minMPS = mps[numMPS - 3];
+            maxMPS = mps[numMPS - 1];
+            diffCusto = fabs(custo[numMPS - 3] - custo[numMPS -1]);
+        } else {
+            minMPS = mps[indiceMinCusto - 1];
+            maxMPS = mps[indiceMinCusto + 1];
+            diffCusto = fabs(custo[indiceMinCusto - 1] - custo[indiceMinCusto + 1]);
         }
 
-        limParticao = mps_values[idxMin];
+        // Utiliza os novos máximos e mínimos para criar a nova faixa
+        passoMPS = (int) (maxMPS - minMPS) / 5;
+        if (passoMPS == 0) passoMPS++;
 
-        // Calcular nova faixa
-        int oldMinMPS = minMPS;
-        int oldMaxMPS = maxMPS;
-        int oldPassoMPS = passoMPS;
-
-        // Ajustar a faixa com base no índice do menor custo
-        if (idxMin == 0)
-        {
-            minMPS = oldMinMPS;
-            maxMPS = oldMinMPS + 2 * oldPassoMPS;
-        }
-        else if (idxMin == numMPS - 1)
-        {
-            minMPS = oldMaxMPS - 2 * oldPassoMPS;
-            maxMPS = oldMaxMPS;
-        }
-        else
-        {
-            minMPS = mps_values[idxMin - 1];
-            maxMPS = mps_values[idxMin + 1];
-        }
-
-        passoMPS = (maxMPS - minMPS) / 5;
-        if (passoMPS == 0)
-            passoMPS = 1;
-
-        diffCusto = fabs(custos[0] - custos[numMPS - 1]);
-
-        std::cout << "nummps " << numMPS
+        std::cout << "nummps "       << numMPS 
                   << " limParticao " << limParticao
-                  << " mpsdiff " << std::fixed << std::setprecision(6) << diffCusto;
-
+                  << " mpsdiff "     << diffCusto
+                  << "\n"            << std::endl;
+        
     } while (diffCusto > limiarCusto && numMPS >= 5);
-
+    
     return limParticao;
 }
 
-int OrdenadorUniversal::determinaLimiarQuebras(int *V)
-{
+int OrdenadorUniversal::determinaLimiarQuebras(int *V) {
     int minLQ = 1;
     int maxLQ = size / 2;
-    int passoLQ = (maxLQ - minLQ) / 5;
-    if (passoLQ == 0)
-        passoLQ = 1;
+    int passoLQ = (int) (maxLQ - minLQ) / 5;
+    int limQuebras;
+    int lq;
+    float diffCusto;
 
-    double diffCusto = std::numeric_limits<double>::max();
     int iter = 0;
     int numLQ;
-    int limQuebras = minLQ;
+    sortperf_t s;
 
-    do
-    {
-        std::cout << '\n';
-        std::cout << "iter " << iter++ << "\n";
+    // Cria um valor controlado de quebras para o vetor
+    srand48(seed);
+    int numShuffle = rand() % size;
+    shuffleVector(V_base, size, numShuffle);
+    
+    do {
+        // Inicialização do bloco
+        std::cout << "iter " << iter++ << std::endl; 
+        limQuebras = minLQ;
         numLQ = 0;
-        double custosQS[10], custosIN[10];
-        int lq_values[10];
 
-        for (int lq = minLQ; lq <= maxLQ && numLQ < 6; lq += passoLQ)
-        {
-            // Criar vetor ordenado
-            int *W = new int[size];
-            for (int i = 0; i < size; i++)
-            {
-                W[i] = i; // Vetor ordenado
-            }
+        for (int t = minLQ; t <= maxLQ; t += passoLQ) {
+            // Criar vetores auxiliares para chamada do QuickSort e InsertionSort
+            int *Vq = new int[size];
+            int *Vi = new int[size];
+            memcpy(Vq, V_base, size * sizeof(int));
+            memcpy(Vi, V_base, size * sizeof(int));
 
-            // Embaralhar com número controlado de quebras
-            srand48(seed);
-            shuffleVector(W, size, lq);
+            resetcounter(&s);
+            quickSort3Ins(Vq, );
+            resetcounter(&s);
+            insertionSort(Vi, );
 
-            // QuickSort
-            int *Wq = new int[size];
-            memcpy(Wq, W, size * sizeof(int));
-            sortperf_t sq;
-            resetcounter(&sq);
-            quickSort3(Wq, 0, size - 1, &sq);
-            double cQ = cost(&sq, a, b, c);
-
-            std::cout << "qs lq " << lq
-                      << " cost " << std::fixed << std::setprecision(9) << cQ
-                      << " cmp " << sq.cmp
-                      << " move " << sq.move
-                      << " calls " << sq.calls << "\n";
-
-            // InsertionSort
-            int *Wi = new int[size];
-            memcpy(Wi, W, size * sizeof(int));
-            sortperf_t si;
-            resetcounter(&si);
-            insertionSort(Wi, 0, size - 1, &si);
-            double cI = cost(&si, a, b, c);
-
-            std::cout << "in lq " << lq
-                      << " cost " << std::fixed << std::setprecision(9) << cI
-                      << " cmp " << si.cmp
-                      << " move " << si.move
-                      << " calls " << si.calls << "\n";
-
-            custosQS[numLQ] = cQ;
-            custosIN[numLQ] = cI;
-            lq_values[numLQ] = lq;
-
-            delete[] Wq;
-            delete[] Wi;
-            delete[] W;
+            delete[] Vq, Vi;
             numLQ++;
         }
 
-        // Encontrar o maior valor onde insertion é melhor que quicksort
-        int idxMin = 0;
-        for (int i = 0; i < numLQ; i++)
-        {
-            if (custosIN[i] < custosQS[i])
-            {
-                idxMin = i;
-            }
+        // Refinação com base nos índices
+        if (indiceMinCusto == 0) {
+            minLQ = mps[0];
+            maxLQ = mps[2];
+            diffCusto = fabs(custo[0] - custo[2]);
+        } else if (indiceMinCusto == numMPS - 1) {
+            minMPS = mps[numMPS - 3];
+            maxMPS = mps[numMPS - 1];
+            diffCusto = fabs(custo[numMPS - 3] - custo[numMPS -1]);
+        } else {
+            minMPS = mps[indiceMinCusto - 1];
+            maxMPS = mps[indiceMinCusto + 1];
+            diffCusto = fabs(custo[indiceMinCusto - 1] - custo[indiceMinCusto + 1]);
         }
 
-        limQuebras = lq_values[idxMin];
+        // Utiliza os novos máximos e mínimos para criar a nova faixa
+        passoMPS = (int) (maxMPS - minMPS) / 5;
+        if (passoMPS == 0) passoMPS++;
 
-        // Calcular nova faixa
-        int oldMinLQ = minLQ;
-        int oldMaxLQ = maxLQ;
-        int oldPassoLQ = passoLQ;
-
-        // Ajustar a faixa com base no índice do menor custo
-        if (idxMin == 0)
-        {
-            minLQ = oldMinLQ;
-            maxLQ = oldMinLQ + 2 * oldPassoLQ;
-        }
-        else if (idxMin == numLQ - 1)
-        {
-            minLQ = oldMaxLQ - 2 * oldPassoLQ;
-            maxLQ = oldMaxLQ;
-        }
-        else
-        {
-            minLQ = lq_values[idxMin - 1];
-            maxLQ = lq_values[idxMin + 1];
-        }
-
-        passoLQ = (maxLQ - minLQ) / 5;
-        if (passoLQ == 0)
-            passoLQ = 1;
-
-        diffCusto = fabs(custosIN[0] - custosIN[numLQ - 1]);
-
-        std::cout << "numlq " << numLQ
-                  << " limQuebras " << limQuebras
-                  << " lqdiff " << std::fixed << std::setprecision(6) << diffCusto
-                  << "\n";
-
-        if (numLQ <= 3)
-        {
-            break; // Sair do loop se tivermos menos de 3 pontos
-        }
-
-    } while (diffCusto > limiarCusto);
+    } while (diffCusto > limiarCusto && numlq >= 6);
 
     return limQuebras;
-}
-
-void OrdenadorUniversal::calculaNovaFaixa(int idxMin, int &minVal, int &maxVal, int &step)
-{
-    int newMin, newMax;
-
-    if (idxMin == 0)
-    {
-        newMin = 0;
-        newMax = 2;
-    }
-    else if (idxMin == 5)
-    { // Último índice (considerando 6 pontos)
-        newMin = 3;
-        newMax = 5;
-    }
-    else
-    {
-        newMin = idxMin - 1;
-        newMax = idxMin + 1;
-    }
-
-    int oldMin = minVal;
-    int oldStep = step;
-
-    minVal = oldMin + newMin * oldStep;
-    maxVal = oldMin + newMax * oldStep;
-    step = (maxVal - minVal) / 5;
-    if (step == 0)
-        step = 1;
 }

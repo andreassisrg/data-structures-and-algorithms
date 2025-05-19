@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug myapp",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/bin/tp1.out",
+      "args": ["teste1.txt"],                // any CLI args
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,  // set true if you need a separate console
+      "MIMode": "gdb",           // or "lldb" on macOS
+      "miDebuggerPath": "/usr/bin/gdb",
+      "preLaunchTask": "build"   // runs your build task first
+    }
+  ]
+}

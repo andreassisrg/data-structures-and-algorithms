@@ -14,14 +14,11 @@ class OrdenadorUniversal {
 
     private:
         double limiarCusto, a, b, c;
-        int size, seed;
-        int limiarParticao;
-        int limiarQuebras;
+        int seed, size, limiarParticao, limiarQuebras;
         int *V_base;
 
         int determinaLimiarParticao(int *V);
         int determinaLimiarQuebras(int *V);
-        void calculaNovaFaixa(int idxMin, int &minVal, int &maxVal, int &step);
 };
 
 #endif

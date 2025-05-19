@@ -3,13 +3,13 @@
 #include "../include/utils.hpp"
 
 int countBreaks(int *V, int size) {
-    int cnt = 0;
+    int breaks = 0;
     for (int i = 1; i < size; ++i) {
         if (V[i] < V[i - 1]) {
-            ++cnt;
+            breaks++;
         }
     }
-    return cnt;
+    return breaks;
 }
 
 void shuffleVector(int *V, int size, int numShuffle) {

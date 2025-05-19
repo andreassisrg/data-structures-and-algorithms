@@ -1,0 +1,47 @@
+size 1500 seed 1 breaks 758
+
+iter 0
+mps 2 cost 183.093969 cmp 18525 move 12686 calls 2245
+mps 301 cost 417.570008 cmp 71620 move 71108 calls 28
+mps 600 cost 858.948799 cmp 148952 move 149245 calls 10
+mps 899 cost 1229.922248 cmp 213352 move 213814 calls 7
+mps 1198 cost 2101.339971 cmp 364587 move 365420 calls 4
+mps 1497 cost 2101.339971 cmp 364587 move 365420 calls 4
+nummps 6 limParticao 2 mpsdiff 675.854858
+
+iter 1
+mps 2 cost 183.093969 cmp 18525 move 12686 calls 2245
+mps 121 cost 243.803915 cmp 40771 move 39638 calls 58
+mps 240 cost 373.617583 cmp 63928 move 63347 calls 31
+mps 359 cost 698.262011 cmp 120710 move 120628 calls 16
+mps 478 cost 858.948799 cmp 148952 move 149245 calls 10
+mps 597 cost 858.948799 cmp 148952 move 149245 calls 10
+nummps 6 limParticao 2 mpsdiff 190.523621
+
+iter 2
+mps 2 cost 183.093969 cmp 18525 move 12686 calls 2245
+mps 49 cost 153.156172 cmp 23498 move 21206 calls 160
+mps 96 cost 205.535794 cmp 33744 move 32302 calls 79
+mps 143 cost 280.759628 cmp 47449 move 46539 calls 46
+mps 190 cost 313.450067 cmp 53371 move 52676 calls 37
+mps 237 cost 373.617583 cmp 63928 move 63347 calls 31
+nummps 6 limParticao 49 mpsdiff 22.441826
+
+iter 3
+mps 2 cost 183.093969 cmp 18525 move 12686 calls 2245
+mps 20 cost 132.630524 cmp 18235 move 14968 calls 372
+mps 38 cost 141.019462 cmp 21081 move 18608 calls 199
+mps 56 cost 157.561876 cmp 24543 move 22450 calls 139
+mps 74 cost 180.481826 cmp 28922 move 27113 calls 106
+mps 92 cost 205.535794 cmp 33744 move 32302 calls 79
+nummps 6 limParticao 20 mpsdiff 42.074505
+
+iter 4
+mps 2 cost 183.093969 cmp 18525 move 12686 calls 2245
+mps 9 cost 140.808698 cmp 17364 move 13129 calls 779
+mps 16 cost 133.812977 cmp 17802 move 14223 calls 470
+mps 23 cost 132.398068 cmp 18594 move 15545 calls 319
+mps 30 cost 133.914369 cmp 19497 move 16825 calls 244
+mps 37 cost 138.943250 cmp 20655 move 18146 calls 208
+nummps 6 limParticao 23 mpsdiff 0.101392
+

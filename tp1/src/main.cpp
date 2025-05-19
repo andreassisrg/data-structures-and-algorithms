@@ -20,11 +20,11 @@ int main(int argc, char *argv[]) {
     int tam;
 
     inputFile >> seed >> limiarCusto >> a >> b >> c >> tam;
-
+    
     int *V = new int[tam];
-    for (int i = 0; i < tam; ++i)
+    for (int i = 0; i < tam; ++i) {
         inputFile >> V[i];
-
+    }
     inputFile.close();
 
     OrdenadorUniversal ou(limiarCusto, a, b, c, tam, seed, V);
