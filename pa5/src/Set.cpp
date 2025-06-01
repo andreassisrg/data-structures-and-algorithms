@@ -108,13 +108,13 @@ StringSet* StringSet::Uniao(StringSet* S) {
     StringSet* conjuntoUniao = new StringSet(tamanhoTabela + S->tamanhoTabela);
 
     for (int i = 0; i < tamanhoTabela; i++) {
-        if (!tabela->vazio) {
+        if (!tabela[i].vazio) {
             conjuntoUniao->Inserir(tabela[i].dado);
         }
     }
 
     for (int i = 0; i < S->tamanhoTabela; i++) {
-        if (!S->tabela->vazio) {
+        if (!S->tabela[i].vazio) {
             conjuntoUniao->Inserir(S->tabela[i].dado);
         }
     }
@@ -125,15 +125,17 @@ StringSet* StringSet::Uniao(StringSet* S) {
 
 StringSet* StringSet::DiferencaSimetrica(StringSet* S) {
     StringSet* conjuntoIntersecao = this->Intersecao(S);
-    StringSet* conjuntoUniao = this->Intersecao(S);
+    StringSet* conjuntoUniao = this->Uniao(S);
 
+    ElementoTabela elementoAtual;
     for (int i = 0; i < conjuntoUniao->tamanhoTabela; i++) {
-        if (!conjuntoUniao->tabela[i].vazio && conjuntoIntersecao->Pertence(conjuntoUniao->tabela[i].dado)) {
-            conjuntoUniao->Remover(conjuntoUniao->tabela[i].dado);
+        elementoAtual = conjuntoUniao->tabela[i];
+        if (!elementoAtual.vazio && conjuntoIntersecao->Pertence(elementoAtual.dado)) {
+            conjuntoUniao->Remover(elementoAtual.dado);
         }
     }
 
-    delete[] conjuntoIntersecao;
+    delete conjuntoIntersecao;
     return conjuntoUniao;
 }
 
@@ -143,5 +145,64 @@ void StringSet::Imprimir() {
         if (!tabela[i].vazio) {
             std::cout << tabela[i].dado << std::endl;
         }
+    }
+}
+
+
+int StringSet::Hash(string s) {
+    int hash = 0;
+    for (int i = 0, l = s.length(); i < l; i++) {
+        hash += int(s[i]);
+    }
+    return (hash % tamanhoTabela);
+}
+
+
+void StringSet::Rehash(int pos) {
+    if (tabela[pos].vazio) return;
+
+    // Reposiciona o elemento com base no novo hash
+    int novoIndice = Hash(tabela[pos].dado);
+    if (novoIndice == pos) return; // Hash é o mesmo, não há nada a fazer
+    
+    // Reinicia o elemento
+    string dado = tabela[pos].dado;
+    tabela[pos].dado = "";
+    tabela[pos].vazio = true;
+    tabela[pos].retirada = false;
+    
+    Inserir(dado);
+}
+
+
+void StringSet::Resize(size_t tamanho) {
+    tamanhoConjunto = 0;
+
+    // Inicializa nova tabela
+    ElementoTabela* novaTabela = new ElementoTabela[tamanho];
+    tamanhoTabela = tamanho;
+    for (int i = 0; i < tamanhoTabela; i++) {
+        novaTabela[i].dado = "";
+        novaTabela[i].vazio = true;
+        novaTabela[i].retirada = false;
+    }
+
+    // Copia todos os elementos para a nova tabela
+    for (int i = 0; i < tamanhoOriginal; i++) {
+        if (!tabela[i].vazio) {
+            novaTabela[i].dado = tabela[i].dado;
+            novaTabela[i].vazio = false;
+        }
+    }
+    tamanhoOriginal = tamanhoTabela;
+
+    // Tratamento da memória da tabela antiga
+    ElementoTabela* temp = tabela;
+    tabela = novaTabela;
+    delete[] temp;
+
+    // É necessário redistribuir os elementos após criar uma tabela maior
+    for (int i = 0; i < tamanhoTabela; i++) {
+        Rehash(i);
     }
 }
