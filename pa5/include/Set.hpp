@@ -17,6 +17,8 @@ class StringSet{
         StringSet(int tamanho);
         ~StringSet();
 
+        int getTamanho();
+
         void Inserir(string s);
         void Remover(string s);
         bool Pertence(string s);

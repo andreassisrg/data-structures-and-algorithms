@@ -20,6 +20,11 @@ StringSet::~StringSet() {
 }
 
 
+int StringSet::getTamanho() {
+    return tamanhoConjunto;
+}
+
+
 void StringSet::Inserir(string s) {
     // Elementos devem ser únicos em um conjunto
     if (Pertence(s)) return;
@@ -96,4 +101,47 @@ StringSet* StringSet::Intersecao(StringSet *S) {
     }
 
     return conjuntoIntersecao;
+}
+
+
+StringSet* StringSet::Uniao(StringSet* S) {
+    StringSet* conjuntoUniao = new StringSet(tamanhoTabela + S->tamanhoTabela);
+
+    for (int i = 0; i < tamanhoTabela; i++) {
+        if (!tabela->vazio) {
+            conjuntoUniao->Inserir(tabela[i].dado);
+        }
+    }
+
+    for (int i = 0; i < S->tamanhoTabela; i++) {
+        if (!S->tabela->vazio) {
+            conjuntoUniao->Inserir(S->tabela[i].dado);
+        }
+    }
+
+    return conjuntoUniao;
+}
+
+
+StringSet* StringSet::DiferencaSimetrica(StringSet* S) {
+    StringSet* conjuntoIntersecao = this->Intersecao(S);
+    StringSet* conjuntoUniao = this->Intersecao(S);
+
+    for (int i = 0; i < conjuntoUniao->tamanhoTabela; i++) {
+        if (!conjuntoUniao->tabela[i].vazio && conjuntoIntersecao->Pertence(conjuntoUniao->tabela[i].dado)) {
+            conjuntoUniao->Remover(conjuntoUniao->tabela[i].dado);
+        }
+    }
+
+    delete[] conjuntoIntersecao;
+    return conjuntoUniao;
+}
+
+
+void StringSet::Imprimir() {
+    for (int i = 0; i < tamanhoTabela; i++) {
+        if (!tabela[i].vazio) {
+            std::cout << tabela[i].dado << std::endl;
+        }
+    }
 }
