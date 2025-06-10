@@ -22,8 +22,10 @@ Vertice* ListaAdjacencia::getVertice(int indice) {
 
 void ListaAdjacencia::InsereAresta(int v, int w) {
     Vertice* V = getVertice(v);
-    if (!V) return;
+    Vertice* W = getVertice(w);
+    if (!V || !W) return;
     V->vizinhos.InsereFinal(w);
+    W->vizinhos.InsereFinal(v);
 }
 
 

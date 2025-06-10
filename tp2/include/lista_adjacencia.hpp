@@ -23,11 +23,11 @@ class ListaAdjacencia {
         int GrauMaximo();
 
         void ImprimeVizinhos(int v);
+        Vertice* getVertice(int indice);
 
     private:
         int tamanho;
         ListaEncadeada<Vertice>* listaVertices;
-        Vertice* getVertice(int indice);
 };
 
 #endif
