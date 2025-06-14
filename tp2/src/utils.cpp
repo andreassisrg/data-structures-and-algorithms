@@ -49,3 +49,23 @@ ListaEncadeada<int>* BFS(ListaAdjacencia* grafo, int origem, int destino) {
 
     return caminho; // pode ser nullptr se não houver caminho
 }
+
+Evento novoEventoChegada(double hora, int id_pacote) {
+    Evento e;
+    e.hora = hora;
+    e.tipo = CHEGADA;
+    e.de = -1;
+    e.para = -1;
+    e.pacote_id = id_pacote;
+    return e;
+}
+
+Evento novoEventoTransporte(double hora, int armazem_de, int armazem_para, int id_pacote) {
+    Evento e;
+    e.hora = hora;
+    e.tipo = TRANSPORTE;
+    e.de = armazem_de;
+    e.para = armazem_para;
+    e.pacote_id = id_pacote;
+    return e;
+}
