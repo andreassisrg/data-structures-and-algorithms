@@ -21,6 +21,7 @@ class MinHeapEvento {
 
         void insere(const Evento &ev);
         Evento retiraProximo();
+        void removeEventosDoPacote(int pacote_id);
 
         bool vazio() const;
         

@@ -23,6 +23,7 @@ class Armazem {
         int CustoRemocao(int secao, int id_pacote, int custoRemocao);
         int CustoRemocaoTotal(int destino, int custoRemocao);
         Pacote* Desempilha(int secao);
+        bool ContemPacoteNaSecao(int destino_secao, Pacote* pacote);
 
     private:
         Pilha<Pacote*>* secoes;

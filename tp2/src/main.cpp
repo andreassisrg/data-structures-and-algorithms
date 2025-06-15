@@ -1,24 +1,36 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #include "../include/utils.hpp"
 #include "../include/lista_encadeada.hpp"
 #include "../include/pacote.hpp"
 #include "../include/armazem.hpp"
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        std::cerr << "Uso correto: " << argv[0] << " arquivo.wkl" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    std::ifstream entrada(argv[1]);
+    if (!entrada) {
+        std::cerr << "Erro ao abrir o arquivo: " << argv[1] << std::endl;
+        return EXIT_FAILURE;
+    }
+
     // Declaração e leitura das variáveis de configuração.
     int capacidadeTransporte;
     int latenciaTransporte;
     int intervaloTransportes;
     int custoRemocao;
     int numeroArmazens;
-    std::cin >> capacidadeTransporte >>
-                latenciaTransporte   >>
-                intervaloTransportes >>
-                custoRemocao         >>
-                numeroArmazens;
+    entrada >> capacidadeTransporte >>
+               latenciaTransporte   >>
+               intervaloTransportes >>
+               custoRemocao         >>
+               numeroArmazens;
     
     // Dado o número de armazéns, é possível modelar eles com um grafo bidirecional não ponderado.
     // Vou utilizar a lista de adjacência implementada na PA2 para esse fim.
@@ -30,38 +42,43 @@ int main() {
         grafo.InsereVertice();
         armazens[i].Inicializar(numeroArmazens);
         for (int j = 0; j < numeroArmazens; j++) {
-            std::cin >> vertice;
+            entrada >> vertice;
             if (vertice == 1) {
                 grafo.InsereAresta(i, j); // o TAD implementa a "bidireção" inserindo (i, j) e (j, i)
             }
         }
     }
 
-    // Lê a quantidade de pacotes.
+    // Lê a quantidade de pacotes
     int numeroPacotes;
-    std::cin >> numeroPacotes;
+    entrada >> numeroPacotes;
 
     // Inicialização dos pacotes.
-    // Inicialização do escalonador com eventos de armazenamento.
+    // Inicialização do escalonador com eventos de armazenamento
     int tempoChegada, id;
-    std::string temp; // Utilizada para descartar descrições da entrada: "pac", "org", "dst".
+    std::string temp; // Utilizada para descartar descrições da entrada: "pac", "org", "dst"
     Pacote* pacotes = new Pacote[numeroPacotes];
     MinHeapEvento escalonador(numeroPacotes * 2); // Capacidade inicial arbitrária
+    int tempoPrimeiroPacote = -1; // O tempo começa a contar a partir da postagem de um primeiro pacote
     for (int i = 0; i < numeroPacotes; i++) {
-        std::cin >> tempoChegada          >>
-                    temp                  >>
-                    id                    >>
-                    temp                  >>
-                    pacotes[id].origem    >>
-                    temp                  >>
-                    pacotes[id].destino;
+        entrada >> tempoChegada          >>
+                   temp                  >>
+                   temp                  >>
+                   temp                  >>
+                   pacotes[i].origem     >>
+                   temp                  >>
+                   pacotes[i].destino;
 
-        // É importante armazenar o pacote na posição de seu ID para facilitar obtê-lo novamente.
-        pacotes[id].id = id;
-        pacotes[id].estado_atual = NAO_POSTADO;
-        pacotes[id].caminho = BFS(&grafo, pacotes[i].origem, pacotes[i].destino);
+        // É importante armazenar o pacote na posição de seu ID para facilitar obtê-lo novamente
+        pacotes[i].id = i;
+        pacotes[i].estado_atual = NAO_POSTADO;
+        pacotes[i].caminho = BFS(&grafo, pacotes[i].origem, pacotes[i].destino);
     
         escalonador.insere(novoEventoChegada(tempoChegada, pacotes[i].id));
+
+        if (tempoPrimeiroPacote > tempoChegada || tempoPrimeiroPacote < 0) {
+            tempoPrimeiroPacote = tempoChegada;
+        }
     }
 
     // A cada intervaloTransportes, é necessário que pacotes em armazéns comecem a ser transportados
@@ -69,7 +86,7 @@ int main() {
     // Cada elemento do seguinte array terá o momento da iteração que o pacote poderá ter o início de um transporte
     int intervaloCaminhoes[numeroPacotes];
     for (int i = 0; i < numeroPacotes; i++) {
-        intervaloCaminhoes[i] = intervaloTransportes;
+        intervaloCaminhoes[i] = intervaloTransportes + tempoPrimeiroPacote;
     }
 
     Pacote* pacote;
@@ -116,8 +133,10 @@ int main() {
             armazens[armazemAtual].ArmazenarPacote(pacote, proximoArmazem);
             pacote->estado_atual = ARMAZENADO;
             imprimirEstatistica(eventoAtual.hora, pacote->id, ARMAZENADO_EM, armazemAtual, proximoArmazem);
+            
+            
             escalonador.insere(novoEventoTransporte(
-                intervaloCaminhoes[pacote->id] + 1,
+                intervaloCaminhoes[pacote->id],
                 pacote->armazemAtual,
                 proximoArmazem,
                 pacote->id
@@ -126,7 +145,13 @@ int main() {
             intervaloCaminhoes[pacote->id] += intervaloTransportes;
 
         } else {
-            // Tipo do evento atual é TRANSPORTE:
+            // Tipo do evento atual é TRANSPORTE
+
+            // Revisitar essa condição:
+            if (!armazens[eventoAtual.de].ContemPacoteNaSecao(eventoAtual.para, pacote)) {
+                continue;
+            }
+
             if (pacote->estado_atual == ARMAZENADO) {
                 // Definindo o armazém e a seção que o pacote está
                 armazemAtual = eventoAtual.de;
@@ -141,6 +166,7 @@ int main() {
                 while (!armazen->SecaoVazia(secaoAtual)) {
                     Pacote* pacoteRemovido = armazen->Desempilha(secaoAtual);
                     pacoteRemovido->estado_atual = REMOVIDO_PARA_TRANSPORTE;
+                    escalonador.removeEventosDoPacote(pacoteRemovido->id);
                     imprimirEstatistica(eventoAtual.hora + custoPorPacote, pacoteRemovido->id, REMOVIDO_DE, armazemAtual, secaoAtual);
                     custoPorPacote += custoRemocao;
                     removidos.Empilha(pacoteRemovido);
@@ -158,7 +184,7 @@ int main() {
                         pacote_temp->armazemAtual = proximoArmazem;
                     } else {
                         escalonador.insere(novoEventoTransporte(
-                            intervaloCaminhoes[pacote_temp->id] + 1,
+                            intervaloCaminhoes[pacote_temp->id],
                             armazemAtual,
                             proximoArmazem,
                             pacote_temp->id

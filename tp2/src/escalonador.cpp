@@ -95,3 +95,23 @@ void MinHeapEvento::swap(Evento &a, Evento &b) {
     a = b;
     b = temp;
 }
+
+void MinHeapEvento::removeEventosDoPacote(int pacote_id) {
+    int i = 0;
+    // Varre o heap inteiro, removendo entradas cujo heap[i].pacote_id == pacote_id
+    while (i < tamanho) {
+        if (heap[i].pacote_id == pacote_id) {
+            // Substitui pelo último elemento
+            heap[i] = heap[tamanho - 1];
+            --tamanho;
+            // Restaura propriedade de heap em i (se ainda houver elementos nessa posição)
+            if (i < tamanho) {
+                siftDown(i);
+                siftUp(i);
+            }
+            // Não incrementa i, pois o novo heap[i] precisa ser rechecado
+        } else {
+            ++i;
+        }
+    }
+}

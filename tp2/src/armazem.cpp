@@ -87,3 +87,25 @@ int Armazem::CustoRemocaoTotal(int destino, int custoRemocao) {
     Pilha<Pacote*>& pilha = secoes[destino];
     return pilha.Tamanho() * custoRemocao;
 }
+
+bool Armazem::ContemPacoteNaSecao(int destino_secao, Pacote* pacote) {
+    Pilha<Pacote*>& pilha = secoes[destino_secao];
+    Pilha<Pacote*> auxiliar;
+    bool encontrado = false;
+
+    // Percorre a pilha procurando o pacote
+    while (!pilha.Vazia()) {
+        Pacote* topo = pilha.Desempilha();
+        if (topo == pacote) {
+            encontrado = true;
+        }
+        auxiliar.Empilha(topo);
+    }
+
+    // Restaura a pilha original
+    while (!auxiliar.Vazia()) {
+        pilha.Empilha(auxiliar.Desempilha());
+    }
+
+    return encontrado;
+}
