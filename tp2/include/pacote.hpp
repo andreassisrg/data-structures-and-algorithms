@@ -8,16 +8,18 @@ enum EstadoPacote {
     CHEGADA_ESCALONADA = 2,
     ARMAZENADO = 3,
     REMOVIDO_PARA_TRANSPORTE = 4,
-    ENTREGUE = 5
+    ENTREGUE = 5,
+    TRANSITO = 6
 };
 
 class Pacote {
     public:
         int id;
+        int estado_atual;
         int origem;
         int destino;
         ListaEncadeada<int>* caminho;
-        int estado_atual;
+        int armazemAtual;
 
         Pacote();
         ~Pacote();

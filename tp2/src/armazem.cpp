@@ -16,6 +16,10 @@ void Armazem::ArmazenarPacote(Pacote* pacote) {
     secoes[destino].Empilha(pacote);
 }
 
+void Armazem::ArmazenarPacote(Pacote* pacote, int destino_secao) {
+    secoes[destino_secao].Empilha(pacote);
+}
+
 Pacote* Armazem::RemoverPacote(int destino, int custoRemocao, int& tempoRemocao) {
     // Remove o pacote do topo da pilha da seção "destino"
     Pilha<Pacote*>& pilha = secoes[destino];
@@ -41,4 +45,45 @@ Pacote* Armazem::RemoverPacote(int destino, int custoRemocao, int& tempoRemocao)
 
 bool Armazem::SecaoVazia(int destino) {
     return secoes[destino].Vazia();
+}
+
+Pilha<Pacote*>& Armazem::GetSecao(int destino) {
+    return secoes[destino];
+}
+
+int Armazem::CustoRemocao(int secao, int id_pacote, int custoRemocao) {
+    Pilha<Pacote*>& pilha = secoes[secao];
+    if (pilha.Vazia()) return -1;
+
+    Pilha<Pacote*> auxiliar;
+    int custo = 0;
+    bool encontrado = false;
+
+    while (!pilha.Vazia()) {
+        Pacote* topo = pilha.Desempilha();
+        auxiliar.Empilha(topo);
+        if (topo->id == id_pacote) {
+            encontrado = true;
+            break;
+        }
+        custo += custoRemocao;
+    }
+
+    // Restaura a pilha original
+    while (!auxiliar.Vazia()) {
+        pilha.Empilha(auxiliar.Desempilha());
+    }
+
+    return encontrado ? custo : -1;
+}
+
+Pacote* Armazem::Desempilha(int secao) {
+    Pilha<Pacote*>& pilha = secoes[secao];
+    if (pilha.Vazia()) return nullptr;
+    return pilha.Desempilha();
+}
+
+int Armazem::CustoRemocaoTotal(int destino, int custoRemocao) {
+    Pilha<Pacote*>& pilha = secoes[destino];
+    return pilha.Tamanho() * custoRemocao;
 }

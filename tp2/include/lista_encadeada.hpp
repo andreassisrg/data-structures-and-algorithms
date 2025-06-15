@@ -28,6 +28,7 @@ class ListaEncadeada {
 
         int Tamanho();
         T& operator[](int indice);
+        int IndiceDe(T valor);
         Nodo<T>* GetCabeca();
 };
 

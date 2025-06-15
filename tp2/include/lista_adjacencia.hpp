@@ -6,6 +6,11 @@
 struct Vertice
 {
     ListaEncadeada<int> vizinhos;
+    
+    int id;
+    bool operator==(const Vertice& outro) const {
+        return id == outro.id;
+    }
 };
 
 class ListaAdjacencia {
@@ -23,6 +28,8 @@ class ListaAdjacencia {
         int GrauMaximo();
 
         void ImprimeVizinhos(int v);
+        bool TemAresta(int v, int w);
+
         Vertice* getVertice(int indice);
 
     private:

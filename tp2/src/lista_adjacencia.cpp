@@ -83,3 +83,16 @@ void ListaAdjacencia::ImprimeVizinhos(int v) {
 ListaAdjacencia::~ListaAdjacencia() {
     delete listaVertices;
 }
+
+bool ListaAdjacencia::TemAresta(int v, int w) {
+    Vertice* V = getVertice(v);
+    if (!V) return false;
+
+    Nodo<int>* atual = V->vizinhos.GetCabeca();
+    while (atual) {
+        if (atual->valor == w) return true;
+        atual = atual->proximo;
+    }
+
+    return false;
+}

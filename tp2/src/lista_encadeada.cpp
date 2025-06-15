@@ -89,8 +89,26 @@ ListaEncadeada<T>::~ListaEncadeada() {
     cabeca = nullptr;
 }
 
+template <typename T>
+int ListaEncadeada<T>::IndiceDe(T valor) {
+    Nodo<T>* atual = cabeca;
+    int indice = 0;
+
+    while (atual) {
+        if (atual->valor == valor) {
+            return indice;
+        }
+        atual = atual->proximo;
+        indice++;
+    }
+
+    return -1; // valor não encontrado
+}
+
 
 #include "../include/lista_encadeada.hpp"
 #include "../include/lista_adjacencia.hpp"
+#include "../include/pacote.hpp"
 template class ListaEncadeada<int>;
 template class ListaEncadeada<Vertice>;
+template class ListaEncadeada<Pacote*>;

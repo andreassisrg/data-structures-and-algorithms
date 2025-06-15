@@ -2,6 +2,7 @@
 
 Pacote::Pacote() {
     caminho = nullptr;
+    armazemAtual = -1;
 }
 
 Pacote::~Pacote() {

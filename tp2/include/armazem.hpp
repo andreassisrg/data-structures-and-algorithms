@@ -15,8 +15,14 @@ class Armazem {
         void Inicializar(int total_armazens);
 
         void ArmazenarPacote(Pacote* pacote);
+        void ArmazenarPacote(Pacote* pacote, int destino_secao); // Sobrecarga para rearmazenamento
+
         Pacote* RemoverPacote(int destino, int custoRemocao, int& tempoRemocao);
         bool SecaoVazia(int destino);
+        Pilha<Pacote*>& GetSecao(int destino);
+        int CustoRemocao(int secao, int id_pacote, int custoRemocao);
+        int CustoRemocaoTotal(int destino, int custoRemocao);
+        Pacote* Desempilha(int secao);
 
     private:
         Pilha<Pacote*>* secoes;

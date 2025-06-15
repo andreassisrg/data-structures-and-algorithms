@@ -1,3 +1,6 @@
+#include <iostream> std::setw(7) << std::setfill('0')
+#include <iomanip>
+
 #include "../include/utils.hpp"
 #include "../include/fila.hpp"
 
@@ -68,4 +71,35 @@ Evento novoEventoTransporte(double hora, int armazem_de, int armazem_para, int i
     e.para = armazem_para;
     e.pacote_id = id_pacote;
     return e;
+}
+
+void imprimirEstatistica(int hora, int id_pacote, std::string operacao, int armazem, int secao) {
+    if (operacao != EM_TRANSITO) {
+        std::cout << std::setw(7) << std::setfill('0') << hora        <<
+                     " pacote "                                       << 
+                     std::setw(3) << std::setfill('0') << id_pacote   <<
+                     operacao                                         <<
+                     std::setw(3) << std::setfill('0') << armazem     <<
+                     " na secao "                                     <<
+                     std::setw(3) << std::setfill('0') << secao       <<
+                     std::endl;
+    } else {
+        std::cout << std::setw(7) << std::setfill('0') << hora        <<
+                     " pacote "                                       << 
+                     std::setw(3) << std::setfill('0') << id_pacote   <<
+                     operacao                                         <<
+                     std::setw(3) << std::setfill('0') << armazem     <<
+                     " para "                                         <<
+                     std::setw(3) << std::setfill('0') << secao       <<
+                     std::endl;
+    }
+}
+
+void imprimirEstatistica(int hora, int id_pacote, std::string operacao, int armazem) {
+    std::cout << std::setw(7) << std::setfill('0') << hora        <<
+                 " pacote "                                       << 
+                 std::setw(3) << std::setfill('0') << id_pacote   <<
+                 operacao                                         <<
+                 std::setw(3) << std::setfill('0') << armazem     <<
+                 std::endl;
 }

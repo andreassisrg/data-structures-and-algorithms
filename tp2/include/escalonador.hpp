@@ -1,3 +1,6 @@
+#ifndef ESCALONADOR_HPP
+#define ESCALONADOR_HPP
+
 enum TipoEvento {
     CHEGADA = 0,
     TRANSPORTE = 1
@@ -35,3 +38,4 @@ class MinHeapEvento {
         void swap(Evento &a, Evento &b);
 };
 
+#endif
