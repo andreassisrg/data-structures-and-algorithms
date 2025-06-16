@@ -8,8 +8,7 @@ enum EstadoPacote {
     CHEGADA_ESCALONADA = 2,
     ARMAZENADO = 3,
     REMOVIDO_PARA_TRANSPORTE = 4,
-    ENTREGUE = 5,
-    TRANSITO = 6
+    ENTREGUE = 5
 };
 
 class Pacote {

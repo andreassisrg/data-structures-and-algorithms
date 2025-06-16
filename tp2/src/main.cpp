@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
 
     // Inicialização dos pacotes.
     // Inicialização do escalonador com eventos de armazenamento
-    int tempoChegada, id;
+    int tempoChegada;
     std::string temp; // Utilizada para descartar descrições da entrada: "pac", "org", "dst"
     Pacote* pacotes = new Pacote[numeroPacotes];
     MinHeapEvento escalonador(numeroPacotes * 2); // Capacidade inicial arbitrária
