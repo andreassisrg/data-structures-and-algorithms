@@ -147,11 +147,6 @@ int main(int argc, char* argv[]) {
         } else {
             // Tipo do evento atual é TRANSPORTE
 
-            // Revisitar essa condição:
-            if (!armazens[eventoAtual.de].ContemPacoteNaSecao(eventoAtual.para, pacote)) {
-                continue;
-            }
-
             if (pacote->estado_atual == ARMAZENADO) {
                 // Definindo o armazém e a seção que o pacote está
                 armazemAtual = eventoAtual.de;
@@ -163,8 +158,9 @@ int main(int argc, char* argv[]) {
                 int tempoDesempilhamento = armazen->CustoRemocaoTotal(secaoAtual, custoRemocao); // Utilizada no escalonador
                 Pilha<Pacote*> removidos;
                 int custoPorPacote = custoRemocao;
+                Pacote* pacoteRemovido = nullptr;
                 while (!armazen->SecaoVazia(secaoAtual)) {
-                    Pacote* pacoteRemovido = armazen->Desempilha(secaoAtual);
+                    pacoteRemovido = armazen->Desempilha(secaoAtual);
                     pacoteRemovido->estado_atual = REMOVIDO_PARA_TRANSPORTE;
                     escalonador.removeEventosDoPacote(pacoteRemovido->id);
                     imprimirEstatistica(eventoAtual.hora + custoPorPacote, pacoteRemovido->id, REMOVIDO_DE, armazemAtual, secaoAtual);
@@ -182,6 +178,7 @@ int main(int argc, char* argv[]) {
                         imprimirEstatistica(eventoAtual.hora + tempoDesempilhamento, pacote_temp->id, EM_TRANSITO, armazemAtual, proximoArmazem);
                         pacote_temp->estado_atual = CHEGADA_ESCALONADA;
                         pacote_temp->armazemAtual = proximoArmazem;
+                        foramTransportados++;
                     } else {
                         escalonador.insere(novoEventoTransporte(
                             intervaloCaminhoes[pacote_temp->id],
@@ -194,7 +191,6 @@ int main(int argc, char* argv[]) {
                         pacote_temp->estado_atual = ARMAZENADO;
                         imprimirEstatistica(eventoAtual.hora + tempoDesempilhamento, pacote_temp->id, REARMAZENADO_EM, armazemAtual, secaoAtual);
                     }
-                    foramTransportados++;
                 }
             }
         }
