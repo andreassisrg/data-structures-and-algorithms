@@ -106,5 +106,7 @@ int ListaEncadeada<T>::IndiceDe(T valor) {
 }
 
 #include "../include/utils.hpp"
+#include "../include/indice_cliente.hpp"
 template class ListaEncadeada<int>;
+template class ListaEncadeada<PacoteDoCliente*>;
 template class ListaEncadeada<Evento*>;

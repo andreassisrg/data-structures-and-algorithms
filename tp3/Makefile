@@ -1,6 +1,6 @@
 CC = g++                             # Compiler
 CFLAGS = -Wall -Wextra -g            # Compiler flags
-TARGET = bin/tp2.out
+TARGET = bin/tp3.out
 
 SRCS := $(wildcard src/*.cpp)
 OBJS := $(patsubst src/%.cpp, obj/%.o, $(wildcard src/*.cpp))
